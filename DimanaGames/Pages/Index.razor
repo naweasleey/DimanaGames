@@ -1,0 +1,98 @@
+﻿@page "/"
+
+<style> /*untuk memberi style atau menghias pada kotak - kotak animals*/
+    .container {
+        width : 400px;
+    }
+
+    button {
+        width : 100px;
+        height : 100px; 
+        font-size : 50px;
+    }
+</style> 
+
+
+<PageTitle>Dimana Games</PageTitle>
+
+<div class="container">
+    <div class="row">
+        @for (var animalNumber = 0; animalNumber < shuffledAnimals.Count; animalNumber++) // looping untuk mengambil list animal
+        {
+            string animal = shuffledAnimals[animalNumber]; //isi variabel animal dengan animalsuffle lalu animalnumber jadi index
+            string animalDescription = $"Animal #{animalNumber}"; // membuat unik setiap animal 
+            
+            // buttonnya jika di klik akan mnegcek dua argumen
+            <div class="col-3">
+                <button @onclick = "(() => ButtonClick(animal, animalDescription))" 
+                    type="button" class="btn-outline-dark"> 
+                    <h1>@animal</h1>
+                </button> 
+            </div>
+        }
+    </div>
+</div>
+
+
+
+@code {
+    List<string> animals = new List<string>() //membuat list animal dengan emoticon animal
+    {
+        "🐸", "🐸",
+        "🐱", "🐱",
+        "🐮", "🐮",
+        "🐯", "🐯",
+        "🐰", "🐰",
+        "🐻‍", "🐻‍",
+        "🐔", "🐔",
+        "🦜", "🦜"
+    };
+
+    List<string> shuffledAnimals = new List<string>(); 
+
+    private void SetUpGame()
+    {
+        Random random = new Random();
+
+        shuffledAnimals = animals
+        .OrderBy(item => random.Next()) //membuat animals muncul secara random atau tidak berutut sesuai list
+        .ToList();
+    }
+
+    protected override void OnInitialized() //untuk memulai atau tampilan awal (?)
+    {
+        SetUpGame();
+    }
+
+    string clickedAnimal = string.Empty; 
+    string clickedAnimalDescription = string.Empty;
+    int animalFound = 0; // variabel untuk mereload game
+
+    private void ButtonClick(string animal, string animalDescription)
+    {
+        if(clickedAnimal == string.Empty) 
+        {
+            clickedAnimal = animal;
+            clickedAnimalDescription = animalDescription;
+        }
+        else if (clickedAnimal == animal && clickedAnimalDescription != animalDescription)
+        {
+            shuffledAnimals = shuffledAnimals
+                .Select(item => item.Replace(animal, string.Empty))
+                .ToList();
+
+            clickedAnimal = string.Empty;
+
+            animalFound++;
+            if(animalFound == 8) // jika animal sudah kososng maka akan di reload
+            {
+                SetUpGame();
+            }
+        }
+        else
+        {
+            clickedAnimal = string.Empty;
+        }
+    }
+}
+
